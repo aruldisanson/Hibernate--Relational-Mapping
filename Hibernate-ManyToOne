@@ -1,0 +1,341 @@
+//----------------------------------------------------------------------------APP.Java-------------------------------------------------------------------------
+package com.jspiders.Many_To_One;
+import java.time.LocalDate;
+import java.util.Scanner;
+
+import com.jspiders.Many_To_One.dao.DepartmentDao;
+import com.jspiders.Many_To_One.dao.EmployeeDao;
+
+public class App {
+    public static void main(String[] args) {
+    	Scanner sc=new Scanner(System.in);
+        boolean running=true;
+        while(running) {
+        	System.out.println("--- Bi-Directional ---");
+        	System.out.println("1. Insert Department Details");
+        	System.out.println("2. Insert Employee Details");
+        	System.out.println("3. Find Employee By Department Id");
+        	System.out.println("4. Find Department By Employee Id");
+        	System.out.println("5. Update Details");
+        	System.out.println("6. Delete Details");
+        	System.out.println("7. Exit");
+        	System.out.println("Please Enter Your Choice: ");
+        	int choice=sc.nextInt();
+        	switch(choice) {
+        	case 1: System.out.println("Insert Department");
+        	        System.out.println("Enter No of Datas to be Inserted: ");
+        	        int no=sc.nextInt();
+        	        for(int i=1;i<=no;i++) {
+        	        	System.out.println("Enter details for department:"+i);
+        	        	System.out.println("Enter Department Id: ");
+        	        	int d_id=sc.nextInt();
+        	        	System.out.println("Enter Department Name: ");
+        	        	String d_name=sc.next();
+        	        	System.out.println("Enter Location: ");
+        	        	String loc=sc.next();
+        	        	DepartmentDao.insertdept(d_id, d_name, loc);
+        	        	System.out.println("Data Inserted For Department :"+i +"👍🏻👍🏻");
+        	        }
+        	        break;
+        	case 2: System.out.println("Insert Employees");
+            System.out.println("Enter No of Datas to be Inserted: ");
+            int n=sc.nextInt();
+            for(int i=1;i<=n;i++) {
+            	System.out.println("Enter details for Employee:"+i);
+            	System.out.println("Enter Employee Id: ");
+            	int id=sc.nextInt();
+            	System.out.println("Enter Employee Name: ");
+            	String name=sc.next();
+            	System.out.println("Enter Designation: ");
+            	String job=sc.next();
+            	
+            	System.out.println("Enter Hire Date: ");
+            	System.out.println("Enter Year:");
+            	int year=sc.nextInt();
+            	System.out.println("Enter Month:");
+            	int month=sc.nextInt();
+            	System.out.println("Enter Day:");
+            	int day=sc.nextInt();
+            	LocalDate date=LocalDate.of(year, month,day );
+            	
+            	System.out.println("Enter Salary: ");
+            	int sal=sc.nextInt();
+            	
+            	System.out.println("Enter Manager Id: ");
+            	int mgr=sc.nextInt();
+            	
+            	System.out.print("Enter Commission: ");
+            	sc.nextLine();
+            	String input = sc.nextLine();   
+            	Integer comm = input.trim().isEmpty() ? null : Integer.parseInt(input.trim());
+            	
+            	System.out.println("Enter Department Id To Insert:");
+            	int dept_id=sc.nextInt();
+            	EmployeeDao.insertemp(id, name, job, date, sal, mgr, comm, dept_id);
+            	System.out.println("Employee Added To the Department Successfully 👍🏻👍🏻");
+            }
+                break; 
+         case 3:System.out.println("3. Find Employee By Department Id");
+        		System.out.println("Enter Department Id: ");
+            	int did=sc.nextInt();
+            	EmployeeDao.findbyid(did);
+            	break;
+            	
+         case 4:System.out.println("4. Find Department By Employee Id");
+   		        System.out.println("Enter Employee Id: ");
+       	        int eid=sc.nextInt();
+       	        DepartmentDao.findbyid(eid);
+       	        break;
+       	          
+         case 6:System.out.println("🙏🏻🙏🏻 Thank You !! 🙏🏻🙏🏻");
+        	    running=false;
+        	    break;
+        	}
+        }
+        sc.close();
+        }
+}
+//----------------------------------------------------------------------------EMPLOYEE DAO-------------------------------------------------------------------------
+package com.jspiders.Many_To_One.dao;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.jspiders.Many_To_One.entity.Department;
+import com.jspiders.Many_To_One.entity.Employee;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class EmployeeDao {
+	public static void insertemp(int id, String name, String job, LocalDate date,int sal, int mgr, Integer comm, int DeptId) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		EntityTransaction transaction=manager.getTransaction();
+        
+		Department d=manager.find(Department.class, DeptId);
+		Employee e=new Employee();
+		e.setEmpno(id);
+		e.setName(name);
+		e.setDesignation(job);
+		e.setHireDate(date);
+		e.setSalary(sal);
+		e.setManagerid(mgr);
+		e.setCommission(comm);
+		e.setDept(d);
+		
+		List<Employee>list=d.getList();
+		list.add(e);
+	    d.setList(list);
+		
+		transaction.begin();
+		manager.persist(e);
+		transaction.commit();	
+	}
+	public static void findbyid(int DeptId) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		Department d=manager.find(Department.class, DeptId);
+		
+		List<Employee>list=d.getList();
+		for(Employee emp:list) {
+			System.out.println(emp.getEmpno());
+			System.out.println(emp.getName());
+			System.out.println(emp.getDesignation());
+			System.out.println(emp.getSalary());
+			System.out.println(emp.getHireDate());
+			System.out.println(emp.getManagerid());
+			System.out.println(emp.getCommission());
+		}
+	}
+}
+
+//----------------------------------------------------------------------------DEPARTMENT DAO-------------------------------------------------------------------------
+package com.jspiders.Many_To_One.dao;
+
+import com.jspiders.Many_To_One.entity.Department;
+import com.jspiders.Many_To_One.entity.Employee;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class DepartmentDao {
+	public static void insertdept(int id, String name, String loc) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		EntityTransaction transaction=manager.getTransaction();
+		Department d=new Department();
+		d.setDeptid(id);
+		d.setName(name);
+		d.setLocation(loc);
+		
+		transaction.begin();
+		manager.persist(d);
+		transaction.commit();
+	}
+	public static void findbyid(int EmployeeId) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		Employee e=manager.find(Employee.class, EmployeeId);	 
+		
+		if(e!=null){
+			Department d=e.getDept();
+			if(d!=null) {
+			System.out.println(d.getDeptid());
+			System.out.println(d.getName());
+			System.out.println(d.getLocation());
+			System.out.println("------------");
+			manager.persist(d);
+			}else {
+				System.out.println("Department not found for employee id:"+EmployeeId);
+			}
+		}
+		else {
+			System.out.println("Employee Id Incorrect please check your Employee id:"+EmployeeId);
+		}
+	}
+	public static void updatedepartment(int EmployeeId, int deptid) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		EntityTransaction transaction=manager.getTransaction();
+        Employee e=manager.find(Employee.class, EmployeeId);	 
+		
+		if(e!=null){
+			Department d=e.getDept();
+			if(d!=null) {
+				transaction.begin();
+				d.setDeptid(deptid);
+			}
+		}
+	}
+}
+//----------------------------------------------------------------------------EMPLOYEE ENTITY-------------------------------------------------------------------------
+package com.jspiders.Many_To_One.entity;
+
+import java.time.LocalDate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+@Entity
+public class Employee {
+	@Id
+	 @Column(name="EMPNO")
+	private int empno;
+	@Column(name="ENAME")
+	private String name;
+@Column(name="JOB")
+	private String Designation;
+@Column(name="MGR")
+	private int Managerid;
+@Column(name = "HIREDATE")
+private LocalDate hireDate;
+@Column(name="SAL")
+	private int salary;
+@Column(name="COMM")
+	private Integer commission;
+@ManyToOne
+private Department dept;
+public int getEmpno() {
+	return empno;
+}
+public String getName() {
+	return name;
+}
+public String getDesignation() {
+	return Designation;
+}
+public int getManagerid() {
+	return Managerid;
+}
+public LocalDate getHireDate() {
+	return hireDate;
+}
+public int getSalary() {
+	return salary;
+}
+public Integer getCommission() {
+	return commission;
+}
+public Department getDept() {
+	return dept;
+}
+public void setEmpno(int empno) {
+	this.empno = empno;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public void setDesignation(String designation) {
+	Designation = designation;
+}
+public void setManagerid(int managerid) {
+	Managerid = managerid;
+}
+public void setHireDate(LocalDate hireDate) {
+	this.hireDate = hireDate;
+}
+public void setSalary(int salary) {
+	this.salary = salary;
+}
+public void setCommission(Integer commission) {
+	this.commission = commission;
+}
+public void setDept(Department dept) {
+	this.dept = dept;
+}
+}
+//----------------------------------------------------------------------------DEPARTMENT ENTITY-------------------------------------------------------------------------
+package com.jspiders.Many_To_One.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity(name="dept")
+public class Department {
+	@Id
+	@Column(name="dept_id")
+	private int deptid;
+	@Column(name="d_name")
+	private String name;
+	@Column(name="loc")
+	private String location;
+	@OneToMany(mappedBy="dept")
+	private List<Employee> list=new ArrayList<Employee>();
+	
+	public int getDeptid() {
+		return deptid;
+	}
+	public void setDeptid(int deptid) {
+		this.deptid = deptid;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getLocation() {
+		return location;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public List<Employee> getList() {
+		return list;
+	}
+	public void setList(List<Employee> list) {
+		this.list = list;
+	}
+}
