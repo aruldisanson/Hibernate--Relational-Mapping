@@ -1,0 +1,445 @@
+//------------------------------------------------------------------APP.JAVA--------------------------------------------------------------------
+package com.jspiders.Many_To_Many;
+
+import java.util.Scanner;
+import com.jspiders.Many_To_Many.dao.CoursesDao;
+import com.jspiders.Many_To_Many.dao.StudentDao;
+
+public class App {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		boolean running = true;
+		while (running) {
+			System.out.println("=== Many To Many ===");
+			System.out.println("1. Insert Courses Details");
+			System.out.println("2. Insert Students Details");
+			System.out.println("3. purchase Courses Details");
+			System.out.println("4. Find list of Courses Details");
+			System.out.println("5. Find list of Students Details");
+			System.out.println("6. Update Students Details by Course");
+			System.out.println("7. Delete Student Details");
+			System.out.println("8. Exit");
+			System.out.println("Please Enter Your Choice: ");
+			int choice = sc.nextInt();
+			switch (choice) {
+			case 1:
+				System.out.println("Insert Courses Details");
+				System.out.println("Enter Course Id: ");
+				int id = sc.nextInt();
+				System.out.println("Enter Course Name: ");
+				String name = sc.next();
+				System.out.println("Enter Course Duration: ");
+				int time = sc.nextInt();
+				System.out.println("Enter Course price: ");
+				double price = sc.nextDouble();
+				System.out.println("Enter Trainer Name: ");
+				String trainer = sc.next();
+
+				CoursesDao.insertcourse(id, name, time, price, trainer);
+				System.out.println("Courses Added Sucessfully 👍🏻👍🏻");
+				break;
+
+			case 2:
+				System.out.println("Insert Students Details");
+				System.out.println("Enter No of Entries :");
+				int student = sc.nextInt();
+
+				for (int i = 1; i <= student; i++) {
+					System.out.println("Enter Student Id: ");
+					int sid = sc.nextInt();
+					System.out.println("Enter Student Name: ");
+					String sname = sc.next();
+					System.out.println("Enter Student phone: ");
+					long sphone = sc.nextLong();
+					System.out.println("Enter Student email: ");
+					String semail = sc.next();
+					System.out.println("Enter Student password: ");
+					String spassword = sc.next();
+					StudentDao.insertstudent(sid, sname, sphone, semail, spassword);
+				}
+				System.out.println("Students Details Added sucessfully 👍🏻👍🏻");
+				break;
+
+			case 3:
+				System.out.println("Students Joining Courses");
+				System.out.println("Enter No of Entries :");
+				int entry = sc.nextInt();
+
+				for (int i = 1; i <= entry; i++) {
+					System.out.println("Enter Student Id: ");
+					int stid = sc.nextInt();
+					System.out.println("Enter Course Id: ");
+					int cid = sc.nextInt();
+					StudentDao.purchasecourse(stid, cid);
+				}
+				System.out.println("Students Joined Course sucessfully 👍🏻👍🏻");
+				break;
+			case 4:
+				System.out.println("Find list Of Courses Taken by student");
+				System.out.println("Enter Student Id: ");
+				int stuid = sc.nextInt();
+				CoursesDao.findbyid(stuid);
+				System.out.println("List Of Courses Taken by student Fetched");
+				break;
+			case 5:
+				System.out.println("Find list Of student Attending Course");
+				System.out.println("Enter Course Id: ");
+				int courseid = sc.nextInt();
+				StudentDao.findbyid(courseid);
+				System.out.println("List of student Attending Course DetailsFetched");
+				break;
+			case 6:
+				System.out.println("Update Course For Student ");
+				System.out.println("Enter Student Id: ");
+				int studentid = sc.nextInt();
+				System.out.println("Enter Course Id: ");
+				int couid = sc.nextInt();
+				System.out.println("Enter Course Price: ");
+				double newprice = sc.nextDouble();
+				CoursesDao.updateCourse(studentid, couid, newprice);
+				break;
+			case 7:
+				System.out.println("Students Cancelling Courses");
+				System.out.println("Enter No of Entries :");
+				int remove = sc.nextInt();
+
+				for (int i = 1; i <= remove; i++) {
+					System.out.println("Enter Student Id: ");
+					int studid = sc.nextInt();
+					System.out.println("Enter Course Id: ");
+					int courid = sc.nextInt();
+					StudentDao.removecourse(studid, courid);
+				}
+				System.out.println("Students cancelled Course sucessfully 👍🏻👍🏻");
+				break;
+			case 8:
+				System.out.println("🙏🏻🙏🏻 Thank You 🙏🏻🙏🏻");
+				running = false;
+				break;
+			}
+		}
+		sc.close();
+	}
+}
+//------------------------------------------------------------------COURSES DAO--------------------------------------------------------------------
+package com.jspiders.Many_To_Many.dao;
+
+import java.util.List;
+
+import com.jspiders.Many_To_Many.entity.Courses;
+import com.jspiders.Many_To_Many.entity.Student;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class CoursesDao {
+	public static void insertcourse(int id, String name, int time, double price, String trainer) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		EntityTransaction transaction=manager.getTransaction();
+		
+		Courses c=new Courses();
+		c.setId(id);
+		c.setName(name);
+		c.setDuration(time);
+		c.setPrice(price);
+		c.setTrainer(trainer);
+		
+		transaction.begin();
+		manager.persist(c);
+		transaction.commit();
+	}
+	public static void findbyid(int StudentId) {
+		EntityManagerFactory factory=Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+		
+		Student s=manager.find(Student.class, StudentId);
+		if(s!=null) {
+			List<Courses> list=s.getCourses();
+			for(Courses c:list) {
+				System.out.println("Course Name: "+c.getName());
+				System.out.println("Trainer Name: "+c.getTrainer());
+				System.out.println("Course Price: "+c.getPrice());
+				System.out.println("Course Duration: "+c.getDuration()+"hours");
+				System.out.println("------------------------");
+			}
+		}
+		else {
+	        System.out.println("Student not found.");
+	    }
+	}
+	public static void updateCourse(int studentId, int courseId, double newPrice) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+	    EntityTransaction transaction = manager.getTransaction();
+	    
+	    Student student = manager.find(Student.class, studentId);
+	    if (student != null) {
+	        transaction.begin();
+	        List<Courses> courseList = student.getCourses();
+
+	        boolean updated = false;
+	        for (Courses c : courseList) {
+	            
+	            if (c.getId() == courseId) {
+	                c.setPrice(newPrice);         
+	                updated = true;
+	                break;
+	            }
+	        }
+
+	        if (updated) {
+	            transaction.commit();
+	            System.out.println("Course price updated successfully 👍🏻👍🏻");
+	        } else {
+	            System.out.println("Course not found for this student ⚠️⚠️");
+	        }
+
+	    } else {
+	        System.out.println("Student not found.");
+	    }
+	 }
+}
+//------------------------------------------------------------------STUDENT DAO--------------------------------------------------------------------
+package com.jspiders.Many_To_Many.dao;
+
+import java.util.List;
+
+import com.jspiders.Many_To_Many.entity.Courses;
+import com.jspiders.Many_To_Many.entity.Student;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class StudentDao {
+	public static void insertstudent(int id, String name, long phone, String email, String password) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager = factory.createEntityManager();
+		EntityTransaction transaction = manager.getTransaction();
+
+		Student s = new Student();
+		s.setStudentid(id);
+		s.setName(name);
+		s.setPhone(phone);
+		s.setEmail(email);
+		s.setPassword(password);
+
+		transaction.begin();
+		manager.persist(s);
+		transaction.commit();
+	}
+
+	public static void purchasecourse(int StudentId, int CoursesId) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager = factory.createEntityManager();
+		EntityTransaction transaction = manager.getTransaction();
+		Student s = manager.find(Student.class, StudentId);
+		if (s != null) {
+			transaction.begin();
+			Courses c = manager.find(Courses.class, CoursesId);
+			if (c != null) {
+				List<Courses> list = s.getCourses();
+				list.add(c);
+				s.setCourses(list);
+			}
+		} else {
+			System.out.println("Invalid Student id: " + StudentId);
+		}
+		transaction.commit();
+	}
+
+	public static void findbyid(int CoursesId) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager = factory.createEntityManager();
+
+		Courses c = manager.find(Courses.class, CoursesId);
+		if (c != null) {
+			List<Student> list = c.getStudents();
+			for (Student s : list) {
+				System.out.println("Student Id: " + s.getStudentid());
+				System.out.println("Student Name: " + s.getName());
+				System.out.println("Student contact: " + s.getPhone());
+				System.out.println("Student email: " + s.getEmail());
+				System.out.println("------------------------");
+			}
+		}
+	}
+
+	public static void updatecourse(int StudentId, int CoursesId, double newprice) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager = factory.createEntityManager();
+		EntityTransaction transaction = manager.getTransaction();
+
+		Student s = manager.find(Student.class, StudentId);
+		if (s != null) {
+			transaction.begin();
+			Courses c = manager.find(Courses.class, CoursesId);
+			if (c != null) {
+				List<Courses> list = s.getCourses();
+				if (list.contains(c)) {
+					c.setPrice(newprice);
+				}
+				else {
+					System.out.println("Course price not upadted for student⚠️⚠️.");
+				}
+			} else {
+				System.out.println("Invalid Course ID: " + CoursesId);
+			}
+			manager.persist(c);
+		} else {
+			System.out.println("Invalid Student ID: " + StudentId);
+		}
+		manager.persist(s);
+		transaction.commit();
+	}
+
+	public static void removecourse(int StudentId, int CoursesId) {
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager = factory.createEntityManager();
+		EntityTransaction transaction = manager.getTransaction();
+
+		Student s = manager.find(Student.class, StudentId);
+		if (s != null) {
+			transaction.begin();
+			Courses c = manager.find(Courses.class, CoursesId);
+			if (c != null) {
+				List<Courses> list = s.getCourses();
+				if (list.contains(c)) {
+					list.remove(c);
+					s.setCourses(list);
+					System.out.println("Course ID: " + CoursesId + " removed successfully for student " + StudentId);
+				} else {
+					System.out.println("Course not found in student's course list.");
+				}
+			} else {
+				System.out.println("Invalid Course ID: " + CoursesId);
+			}
+			manager.persist(c);
+		} else {
+			System.out.println("Invalid Student ID: " + StudentId);
+		}
+		manager.persist(s);
+		transaction.commit();
+	}
+}
+//------------------------------------------------------------------COURSE ENTITY--------------------------------------------------------------------
+package com.jspiders.Many_To_Many.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+@Entity
+public class Courses {
+	@Id
+	private int id;
+	private String name;
+	private int duration;
+	private double price;
+	private String trainer;
+	@ManyToMany(mappedBy="courses")
+	private List<Student> students=new ArrayList<Student>();
+	
+	public int getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public int getDuration() {
+		return duration;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public String getTrainer() {
+		return trainer;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public void setTrainer(String trainer) {
+		this.trainer = trainer;
+	}
+	public List<Student> getStudents() {
+		return students;
+	}
+	public void setStudents(List<Student> students) {
+		this.students = students;
+	}
+}
+//------------------------------------------------------------------STUDENT ENTITY--------------------------------------------------------------------
+package com.jspiders.Many_To_Many.entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+@Entity
+public class Student {
+	@Id
+	private int Studentid;
+	private String name;
+	private long phone;
+	private String email;
+	private String password;
+	@ManyToMany
+	private List<Courses> courses=new ArrayList<Courses>();
+	
+	public int getStudentid() {
+		return Studentid;
+	}
+	public String getName() {
+		return name;
+	}
+	public long getPhone() {
+		return phone;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setStudentid(int studentid) {
+		Studentid = studentid;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setPhone(long phone) {
+		this.phone = phone;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public List<Courses> getCourses() {
+		return courses;
+	}
+	public void setCourses(List<Courses> courses) {
+		this.courses = courses;
+	}
+}
