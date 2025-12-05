@@ -1,0 +1,479 @@
+package com.jspiders.aadhar;
+import java.util.Scanner;
+
+import com.jspiders.aadhar.dao.aadhardao;
+import com.jspiders.aadhar.dao.userdao;
+import com.jspiders.has.aadhar.Aadhar;
+import com.jspiders.has.user.User;
+public class App {
+    public static void main(String[] args) {
+    	Scanner sc = new Scanner(System.in);
+        boolean running = true;
+
+        while (running) {
+            System.out.println("User-Aadhar Details");
+            System.out.println("1  Insert User Data");
+            System.out.println("2  Insert Aadhar Data");
+            System.out.println("3  Find Data by Id");
+            System.out.println("4  Update Data by Id");
+            System.out.println("5  Delete Data by Id");
+            System.out.println("6  Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+             case 1:System.out.print("Enter number of Datas to insert: ");
+                    int n = sc.nextInt();
+                    sc.nextLine();
+                    
+
+                     for (int i = 1; i <= n; i++) {
+                        System.out.println("Enter details for user " + i + ":");
+                        System.out.println("====== User Details ====");
+                        System.out.print("Enter id No: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+
+                        System.out.print("Enter Name: ");
+                        String name = sc.nextLine();
+
+                        System.out.print("Enter Email: ");
+                        String email = sc.nextLine();
+
+                        System.out.print("Enter Phonenumber: ");
+                        long phone = sc.nextLong();
+                        System.out.println("====== Aadhar Details ====");
+                        System.out.print("Enter Aadhar id: ");
+                        int aadhar_id = sc.nextInt();
+                        sc.nextLine();
+
+                        System.out.print("Enter Name: ");
+                        String aadhar_name = sc.nextLine();
+
+                        System.out.print("Enter Phonenumber: ");
+                        long aadhar_phoneno = sc.nextLong();
+                        
+                        System.out.println("Enter address");
+                        String address=sc.next();
+                        
+                        Aadhar aadhar=new Aadhar();
+                        aadhar.setAadharid(aadhar_id);
+                        aadhar.setName(aadhar_name);
+                        aadhar.setPhoneno(aadhar_phoneno);
+                        aadhar.setAddress(address);
+                        
+                        userdao.insertuserdata(id, name, phone, email, aadhar);
+                    }
+                    System.out.println("Data Inserted Sucessfully 👍🏻👍🏻");
+                    break;
+             case 2:System.out.print("Enter number of Datas to insert: ");
+             int nos = sc.nextInt();
+             sc.nextLine();
+             
+
+              for (int i = 1; i <= nos; i++) {
+                 System.out.println("Enter details for user " + i + ":");
+                 System.out.println("====== Aadhar Details ====");
+                 System.out.print("Enter Aadhar id: ");
+                 int aadhar_id = sc.nextInt();
+                 sc.nextLine();
+
+                 System.out.print("Enter Name: ");
+                 String aadhar_name = sc.nextLine();
+
+                 System.out.print("Enter Phonenumber: ");
+                 long aadhar_phoneno = sc.nextLong();
+                 
+                 System.out.println("Enter address");
+                 String address=sc.next();
+                 System.out.println("====== User Details ====");
+                 System.out.print("Enter id No: ");
+                 int id = sc.nextInt();
+                 sc.nextLine();
+
+                 System.out.print("Enter Name: ");
+                 String name = sc.nextLine();
+
+                 System.out.print("Enter Email: ");
+                 String email = sc.nextLine();
+
+                 System.out.print("Enter Phonenumber: ");
+                 long phone = sc.nextLong();
+
+                 
+                 User u=new User();
+                u.setId(id);
+         	 	u.setName(name);
+         	 	u.setEmail(email);
+         	 	u.setPhonenumber(phone);
+         	 	aadhardao.insertaadhardata(aadhar_id, aadhar_name, aadhar_phoneno, address, u);
+              }
+                    
+         case 3:System.out.print("Enter User ID to Find: ");
+                int findId = sc.nextInt();
+                sc.nextLine();
+                userdao.findbyid(findId);
+             
+                System.out.print("Enter Aadhar ID to Find: ");
+                int findUserId = sc.nextInt();
+                aadhardao.findbyid(findUserId);
+                break;
+                
+         case 4:System.out.println("=== Update User ===");
+                System.out.print("Enter User ID: ");
+                int updateUserId = sc.nextInt();
+                sc.nextLine();
+
+                System.out.print("Enter New Name: ");
+                String newName = sc.nextLine();
+
+                System.out.print("Enter New Phone: ");
+                long newPhone = sc.nextLong();
+                sc.nextLine();
+
+                System.out.print("Enter New Email: ");
+                String newEmail = sc.nextLine();
+                
+                System.out.println("=== Aadharcard Details Update ===");
+                System.out.print("Enter aadhar ID: ");
+                int aadharrId = sc.nextInt();
+
+                System.out.print("Enter Aadharcard Name: ");
+                String updateaadharName = sc.nextLine();
+
+                System.out.print("Enter Aadharcard Phone: ");
+                long updateadharphone = sc.nextLong();
+                sc.nextLine();
+
+                System.out.print("Enter Aadharcard Address: ");
+                String updateaadharadress = sc.nextLine();
+                
+                userdao.updateDetails(updateUserId, newName, newPhone, newEmail, updateaadharName, updateadharphone, updateaadharadress);
+                aadhardao.updateDetails(aadharrId, newName, newPhone, newEmail, updateaadharName, updateadharphone, updateaadharadress);
+                System.out.println("Updated Sucessfully !! 👍🏻👍🏻");
+                break;
+                
+         case 5:System.out.print("Enter User ID to Delete: ");
+                int deleteId = sc.nextInt();
+                sc.nextLine();
+                userdao.deleteById(deleteId);
+                System.out.print("Enter Aadhar ID to Delete: ");
+                int deleteaadharId = sc.nextInt();
+                aadhardao.deleteById(deleteaadharId);
+                break;
+
+         case 6:System.out.println("🙏🏻 Thank You come again !! 🙏🏻");
+     	        running = false;
+                break;
+
+        default:System.out.println("Invalid Choice! Try Again.");
+            }      
+        } 
+        sc.close();
+    }
+}
+
+--------------------------------------------------------------------AADHAAR DAO----------------------------------------------------
+package com.jspiders.aadhar.dao;
+
+import com.jspiders.has.aadhar.Aadhar;
+import com.jspiders.has.user.User;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class aadhardao {
+	public static void insertaadhardata(int aadhar_id, String aadhar_name, long phone_no, String add, User user){
+	EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	EntityManager manager=factory.createEntityManager();
+    EntityTransaction transaction=manager.getTransaction();
+    
+    Aadhar aadhar=new Aadhar();
+    aadhar.setAadharid(aadhar_id);
+    aadhar.setName(aadhar_name);
+    aadhar.setPhoneno(phone_no);
+    aadhar.setAddress(add);
+    aadhar.setUser(user);
+    
+    transaction.begin();
+    manager.persist(user);
+    manager.persist(aadhar);
+    transaction.commit();
+    System.out.println(" ✅ Aadhar Record Created Successfully !! ✅");
+	}
+	public static void findbyid(int  AadharId) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+
+	    Aadhar a = manager.find(Aadhar.class, AadharId);
+	    if (a != null) {
+	    	System.out.println(a.getAadharid());
+            System.out.println(a.getName());
+            System.out.println(a.getPhoneno());
+            System.out.println(a.getAddress());
+	        System.out.println("=== User card Details ===");
+	        User u = a.getUser();
+	        if(u!=null) {
+	        System.out.println(u.getId());
+			System.out.println(u.getName());
+			System.out.println(u.getPhonenumber());
+			System.out.println(u.getEmail());
+	        }
+	    } 
+	}
+	public static void updateDetails(int AadharId,String name, long phone, String email,  String aname, long aphone, String aaddress) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+	    EntityTransaction transaction = manager.getTransaction();
+
+	    Aadhar a = manager.find(Aadhar.class, AadharId);
+	    if (a != null) {
+
+	    	User u = a.getUser();
+
+	        if (u != null) {
+	            transaction.begin();
+	            System.out.println("====== User Details ====");
+	            u.setName(name);
+	            u.setPhonenumber(phone);;
+	            u.setEmail(email);
+	            System.out.println("====== Aadhar Details ====");
+	            a.setName(aname);
+	            a.setPhoneno(aphone);
+	            a.setAddress(aaddress);
+
+	            manager.merge(u);
+	            transaction.commit();
+	            System.out.println("User and Aadhar card details updated successfully.");
+	        } else {
+	            System.out.println("User not found for Aadhar id: " + AadharId);
+	        }
+	    } else {
+	        System.out.println("Invalid Aadhar ID: " + AadharId);
+	    }
+	}
+
+	public static void deleteById(int AadharId) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+	    EntityTransaction transaction = manager.getTransaction();
+
+	    Aadhar a = manager.find(Aadhar.class, AadharId);
+	    if (a != null) {
+	    	User u = a.getUser();
+	        if (u != null) {
+	        transaction.begin();
+	        manager.remove(u);
+	        manager.remove(a);
+	        transaction.commit();
+	        System.out.println("User and Aadharcard deleted successfully for ID: " + AadharId);
+	    } else {
+	        System.out.println("Invalid User Id: " +AadharId );
+	    }
+	   }
+	}
+}
+--------------------------------------------------------------------USER DAO----------------------------------------------------
+package com.jspiders.aadhar.dao;
+import com.jspiders.has.aadhar.Aadhar;
+import com.jspiders.has.user.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+
+public class userdao {
+	public static void insertuserdata(int id, String name, long no, String email, Aadhar aadhar){
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+		EntityManager manager=factory.createEntityManager();
+	    EntityTransaction transaction=manager.getTransaction();
+	    
+	    
+	 	User u=new User();
+	 	u.setId(id);
+	 	u.setName(name);
+	 	u.setEmail(email);
+	 	u.setPhonenumber(no);
+	 	u.setAadhar(aadhar);
+	 	
+	 	transaction.begin();
+	    manager.persist(u);
+	    manager.persist(aadhar);
+	    transaction.commit();
+	    System.out.println(" ✅ User Record Created Successfully !! ✅");
+		}
+	public static void findbyid(int userId) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+
+	    User u = manager.find(User.class, userId);
+	    if (u != null) {
+	    	System.out.println("====== User Details ====");
+	        System.out.println(u.getId());
+	        System.out.println(u.getName());
+	        System.out.println(u.getPhonenumber());
+	        System.out.println(u.getEmail());
+	        System.out.println("=== Aadhar card Details ===");
+	        Aadhar a = u.getAadhar();
+	        if (a != null) {
+	            System.out.println(a.getAadharid());
+	            System.out.println(a.getName());
+	            System.out.println(a.getPhoneno());
+	            System.out.println(a.getAddress());
+	        } else {
+	            System.out.println("No Aadhar card details found for this user.");
+	        }
+	    } else {
+	        System.out.println("Invalid user id: " + userId);
+	    }
+	}
+
+	public static void updateDetails( int userId,String name, long phone, String email,  String aname, long aphone, String aaddress) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+	    EntityTransaction transaction = manager.getTransaction();
+
+	    User user = manager.find(User.class, userId);
+	    if (user != null) {
+	    	Aadhar a = user.getAadhar();
+	        if (a != null) {
+	            transaction.begin();
+	            user.setName(name);
+	            user.setPhonenumber(phone);;
+	            user.setEmail(email);             
+	            
+	            a.setName(aname);
+	            a.setPhoneno(aphone);
+	            a.setAddress(aaddress);
+
+	            manager.merge(user);
+	            manager.merge(a);
+	            transaction.commit();
+	            System.out.println("User and Aadhar card details updated successfully.");
+	        } else {
+	            System.out.println("Pancard not found for user id: " + userId);
+	        }
+	    } else {
+	        System.out.println("Invalid User ID: " + userId);
+	    }
+	}
+	public static void deleteById(int userId) {
+	    EntityManagerFactory factory = Persistence.createEntityManagerFactory("development");
+	    EntityManager manager = factory.createEntityManager();
+	    EntityTransaction transaction = manager.getTransaction();
+
+	    User user = manager.find(User.class, userId);
+	    if (user != null) {
+	    	Aadhar a = user.getAadhar();
+	    	transaction.begin();
+	        manager.remove(user);
+
+	        if (a != null) {
+	            manager.remove(a);
+	        }
+	        transaction.commit();
+	        System.out.println("User and Aadharcard deleted successfully for ID: " + userId);
+	    } else {
+	        System.out.println("Invalid User Id: " + userId);
+	    }
+	}
+}
+--------------------------------------------------------------------ADAHHAR ENTITY----------------------------------------------------  
+package com.jspiders.has.aadhar;
+
+import com.jspiders.has.user.User;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+
+@Entity
+public class Aadhar {
+	@Id
+	private int aadharid;
+    private String name;
+	private String address;
+	private long phoneno;
+	@OneToOne(mappedBy="aadhar")
+	private User user;
+	
+	public int getAadharid() {
+		return aadharid;
+	}
+	public void setAadharid(int aadharid) {
+		this.aadharid = aadharid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public long getPhoneno() {
+		return phoneno;
+	}
+	public void setPhoneno(long phoneno) {
+		this.phoneno = phoneno;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+}
+--------------------------------------------------------------------USER ENTITY----------------------------------------------------  
+package com.jspiders.has.user;
+import com.jspiders.has.aadhar.Aadhar;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+@Entity
+public class User {
+	@Id
+	private int id;
+	private String name;
+	private String email;
+	private long phonenumber;
+	@OneToOne
+	private Aadhar aadhar;
+	
+	public Aadhar getAadhar() {
+		return aadhar;
+	}
+	public void setAadhar(Aadhar aadhar) {
+		this.aadhar = aadhar;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public long getPhonenumber() {
+		return phonenumber;
+	}
+	public void setPhonenumber(long phonenumber) {
+		this.phonenumber = phonenumber;
+	}
+}
